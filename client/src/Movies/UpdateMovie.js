@@ -20,6 +20,9 @@ const UpdateMovie = props => {
         if(e.target.name === 'metascore') {
             value = parseInt(value, 0)
         }
+        if(e.target.name === 'stars') {
+            value = value.split(',');
+        }
         setMovie({
             ...movie,
             [e.target.name]: value

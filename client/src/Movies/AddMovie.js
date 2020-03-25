@@ -1,24 +1,19 @@
-import React, {useState, useEffect} from 'react'
-import { useParams, useHistory } from 'react-router-dom'
+import React, {useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import axios from 'axios'
 
 const AddMovie = props => {
     const [movie, setMovie] = useState({})
-    const { movieID } = useParams();
     const { push } = useHistory();
-
-    useEffect(() => {
-        const movieToUpdate = props.movies.find(m => `${m.id}` === movieID)
-        if(movieToUpdate) {
-            setMovie(movieToUpdate)
-        }
-    }, [movieID, props.movies])
 
     const handleChanges = e => {
         e.persist();
         let value = e.target.value;
         if(e.target.name === 'metascore') {
             value = parseInt(value, 0)
+        }
+        if(e.target.name === 'stars') {
+            value = value.split(',');
         }
         setMovie({
             ...movie,
@@ -28,10 +23,10 @@ const AddMovie = props => {
 
     const handleAdd = e => {
         e.preventDefault();
-        axios.post(`http://localhost:7000/api/movies/${movieID}`, movie)
+        axios.post(`http://localhost:7000/api/movies`, movie)
         .then(res => {
-            console.log('Movie Updated', res)
-            props.setMovieList([res.data, ...props.movies.filter(m => `${m.id}` !== movieID)])
+            console.log('Movie Added', res)
+            props.setMovieList([...props.movies, movie])
             push('/')
         })
         .catch(err => console.log(err))
@@ -47,7 +42,7 @@ const AddMovie = props => {
 
             <label htmlFor='stars'>Stars: <input type='text' name='stars' value={movie.stars} id='stars' onChange={handleChanges} /></label>
 
-            <button className='submit btn' onClick={handleUpdate} >Update</button>
+            <button className='submit btn' onClick={handleAdd} >Add</button>
         </form>
     )
 }
